@@ -1,0 +1,31 @@
+version: '3'
+services:
+  database:
+    image: "postgres:14.1-alpine"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=my_root_password
+      - POSTGRES_DB=postgres
+    ports:
+      - 5442:5432
+    volumes:
+      - ./infrastructure/database/data:/var/lib/postgresql/data/
+
+  redis:
+    image: 'docker.io/bitnami/redis:6.0-debian-10'
+    env_file: ./infrastructure/redis/redis.env
+    ports:
+      - '6379:6379'
+    # volumes:
+      # - './infrastructure/redis/data:/bitnami/redis/data'
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    restart: unless-stopped
