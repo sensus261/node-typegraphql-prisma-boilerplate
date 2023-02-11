@@ -16,7 +16,7 @@
     "lint": "tsc --noEmit && eslint . --ext .js,.ts",
     "lint:fix": "tsc --noEmit && eslint . --ext .js,.ts --fix",
 
-    "start:dev": "yarn build && yarn watch-ts",
+    "start:dev": "yarn build && yarn watch",
 
     "test": "jest --runInBand",
     "test:all": "jest --runInBand --watchAll ./src"

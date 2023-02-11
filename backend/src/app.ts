@@ -92,8 +92,6 @@ class App {
       logging: false,
     } as DataSourceOptions;
 
-    logger.info(connectionOptions);
-
     try {
       logger.info(
         `💤 Connecting to database using driver '${DB_TYPE}' on host '${DB_PATH}' using port '${DB_PORT}'...`

@@ -29,3 +29,12 @@ services:
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
+
+  test-database:
+    image: "postgres:14.1-alpine"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=my_root_password
+      - POSTGRES_DB=test
+    ports:
+      - 5443:5432
