@@ -26,8 +26,8 @@
 
 
     "test:preload": "echo 'Running tests...\n'",
-    "test": "yarn test:preload && jest",
-    "test:all": "yarn test:preload && jest ./src"
+    "test": "yarn test:preload && jest --runInBand",
+    "test:all": "yarn test:preload && jest --runInBand ./src"
   },
   "author": "Dragan Dorin Alexandru",
   "license": "MIT",
