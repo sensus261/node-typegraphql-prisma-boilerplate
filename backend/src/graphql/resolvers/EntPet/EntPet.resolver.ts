@@ -1,7 +1,6 @@
 import { Resolver, Query, Mutation, Arg } from 'type-graphql';
-import { Service } from 'typedi';
 
-import { EntPet } from '@src/entities';
+import { EntPet } from '@src/graphql/entities';
 import { PaginationInput } from '@src/graphql/inputs/PaginateEntity/PaginationInput';
 import { EntPetService } from '@src/services';
 
@@ -10,14 +9,13 @@ import EntPetFilters from './inputs/EntPetFiltersData';
 import UpdateEntPetData from './inputs/UpdateEntPetData';
 import { PaginatedPetsResponse } from './outputs/EntPetPagination';
 
-@Service()
 @Resolver()
 class EntPetResolver {
-  constructor(private readonly petService: EntPetService) {}
   @Query(() => EntPet)
   async pet(@Arg('id') id: string) {
     try {
-      const shop = this.petService.getPetByID(id);
+      const petService = new EntPetService();
+      const shop = await petService.getPetByID(id);
 
       return shop;
     } catch (error) {
@@ -31,7 +29,8 @@ class EntPetResolver {
     @Arg('filters', { nullable: true }) filters?: EntPetFilters
   ) {
     try {
-      const paginatedPetsResponse = await this.petService.getPets(
+      const petService = new EntPetService();
+      const paginatedPetsResponse = await petService.getPets(
         pagination,
         filters
       );
@@ -45,7 +44,8 @@ class EntPetResolver {
   @Mutation(() => EntPet)
   async createPet(@Arg('data') data: CreateEntPetData) {
     try {
-      const pet = await this.petService.createPet(data);
+      const petService = new EntPetService();
+      const pet = await petService.createPet(data);
 
       return pet;
     } catch (error) {
@@ -56,7 +56,8 @@ class EntPetResolver {
   @Mutation(() => EntPet)
   async updatePet(@Arg('data') data: UpdateEntPetData) {
     try {
-      const pet = await this.petService.updatePet(data);
+      const petService = new EntPetService();
+      const pet = await petService.updatePet(data);
 
       return pet;
     } catch (error) {
@@ -67,7 +68,8 @@ class EntPetResolver {
   @Mutation(() => Boolean)
   async deletePet(@Arg('id') id: string) {
     try {
-      const petDeleted = await this.petService.deletePet(id);
+      const petService = new EntPetService();
+      const petDeleted = petService.deletePet(id);
 
       return petDeleted;
     } catch (error) {

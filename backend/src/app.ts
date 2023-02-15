@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
@@ -6,23 +7,17 @@ import express from 'express';
 import lusca from 'lusca';
 import morgan from 'morgan';
 import { buildSchema, BuildSchemaOptions } from 'type-graphql';
-import { Container } from 'typedi';
-import { DataSource, DataSourceOptions } from 'typeorm';
 
-import { EntPet } from './entities';
 import { EntPetResolver } from './graphql/resolvers';
 import { logger, redis } from './utils';
 
 class App {
   public app: express.Application;
 
-  public dataSource: DataSource;
-
   constructor() {
     this.app = express();
     this.app.set('env', process.env.NODE_ENV);
 
-    this.connectToTheDatabase();
     this.createRedisClient();
     this.initializeMiddlewares();
     this.initializeGraphQLServer();
@@ -64,7 +59,6 @@ class App {
 
     const schema = await buildSchema({
       resolvers,
-      container: Container,
     });
 
     const apolloServer = new ApolloServer({
@@ -75,32 +69,15 @@ class App {
   }
 
   private async connectToTheDatabase() {
-    const { DB_TYPE, DB_PATH, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } =
-      process.env;
-
-    const entities: DataSourceOptions['entities'] = [EntPet];
-
-    const connectionOptions = {
-      type: DB_TYPE,
-      host: DB_PATH,
-      port: DB_PORT,
-      username: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      entities,
-      synchronize: true,
-      logging: false,
-    } as DataSourceOptions;
-
+    // TODO: Add database connection notifier
+    const prisma = new PrismaClient();
     try {
-      logger.info(
-        `💤 Connecting to database using driver '${DB_TYPE}' on host '${DB_PATH}' using port '${DB_PORT}'...`
-      );
-      this.dataSource = new DataSource(connectionOptions);
-      await this.dataSource.initialize();
+      logger.info('💤 Connecting to postgres database using...');
+      await prisma.$connect();
       logger.info('💜 Database connection successfull!');
     } catch (error) {
       logger.error(`❌ Database connection error: ${error}`);
+      logger.error(error);
     }
   }
 

@@ -18,12 +18,6 @@ const validateEnv = (): void => {
       ],
     }),
     PORT: port(),
-    DB_TYPE: str(),
-    DB_PATH: str(),
-    DB_PORT: port(),
-    DB_PASSWORD: str(),
-    DB_USER: str(),
-    DB_NAME: str(),
     REDIS_HOST: str(),
   });
 };

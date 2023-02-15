@@ -12,7 +12,7 @@ export class Statistics {
   count: number;
 }
 
-export const PaginatedEntityResponse = <T>(entity: ClassType<T>) => {
+export const PaginatedEntityResponse = <T>(entity: ClassType) => {
   @ObjectType({ isAbstract: true })
   abstract class PaginatedResponseClass {
     @Field(() => [entity])

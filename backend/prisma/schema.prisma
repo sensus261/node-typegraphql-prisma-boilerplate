@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EntPet {
+  id        String   @id(map: "PK_a7de924029e97d306f173a22735") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+  updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+  name      String
+  age       String
+  breed     String?
+}

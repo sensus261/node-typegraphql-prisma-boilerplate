@@ -1,39 +1,24 @@
-import { EntPet } from '@src/entities';
+import { EntPet } from '@prisma/client';
+
+import { EntPetService } from '@src/services';
+import { beforeAllTests } from '@src/tests/beforeAllTests';
 import { gql, graphQLCall } from '@src/tests/graphql';
-import {
-  clearAndDestroyDatabase,
-  clearDatabase,
-  initializeDatabase,
-  synchronizeDatabase,
-} from '@src/tests/helper';
 
 let pet: EntPet;
 
 describe('EntPet queries tests', () => {
-  beforeAll(async () => {
-    await initializeDatabase();
-  });
+  beforeAllTests();
 
   beforeEach(async () => {
-    await synchronizeDatabase();
-
-    pet = new EntPet();
-    pet.name = 'Milo';
-    pet.age = '1 year';
-    pet.breed = 'Bichon';
-
-    await pet.save();
+    const petService = new EntPetService();
+    pet = await petService.createPet({
+      name: 'Milo',
+      age: '1 year',
+      breed: 'Bichon',
+    });
   });
 
-  afterEach(async () => {
-    await clearDatabase();
-  });
-
-  afterAll(async () => {
-    await clearAndDestroyDatabase();
-  });
-
-  it('should be able to query pets', async () => {
+  test('should be able to query pets', async () => {
     const pets = await graphQLCall({
       source: gql`
         query pets {

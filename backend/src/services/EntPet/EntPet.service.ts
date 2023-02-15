@@ -1,8 +1,6 @@
+import { PrismaClient, Prisma, EntPet } from '@prisma/client';
 import { oneLine } from 'common-tags';
-import { Service } from 'typedi';
-import { FindOptionsWhere } from 'typeorm';
 
-import { EntPet } from '@src/entities';
 import { getStringFieldFilterOperator } from '@src/graphql/inputs/FilterEntity/utils/FieldFilterOperators';
 import { PaginationInput } from '@src/graphql/inputs/PaginateEntity/PaginationInput';
 import { UpdateOperation } from '@src/graphql/inputs/UpdateEntity/UpdateOperation.enum';
@@ -11,12 +9,12 @@ import EntPetFilters from '@src/graphql/resolvers/EntPet/inputs/EntPetFiltersDat
 import UpdateEntPetData from '@src/graphql/resolvers/EntPet/inputs/UpdateEntPetData';
 import { PaginatedPetsResponse } from '@src/graphql/resolvers/EntPet/outputs/EntPetPagination';
 
-@Service()
 class EntPetService {
   public async getPetByID(id: string): Promise<EntPet> {
-    const pet = await EntPet.findOneOrFail({
+    const prisma = new PrismaClient();
+
+    const pet = await prisma.entPet.findFirstOrThrow({
       where: { id },
-      relations: [],
     });
 
     return pet;
@@ -26,13 +24,12 @@ class EntPetService {
     pagination?: PaginationInput,
     filters?: EntPetFilters
   ): Promise<PaginatedPetsResponse> {
-    // Prepare find where options (filters) for TypeORM
-    const whereOptions: FindOptionsWhere<EntPet> | FindOptionsWhere<EntPet>[] =
-      {};
+    const prisma = new PrismaClient();
+
+    const whereOptions: Prisma.EntPetWhereInput = {};
 
     if (filters) {
       try {
-        // Handle name (string) field filter
         if (filters.name) {
           whereOptions.name = getStringFieldFilterOperator(
             filters.name,
@@ -60,13 +57,12 @@ class EntPetService {
     }
 
     const findArgs = {
-      relations: [],
       take: pagination?.first || 50,
       skip: pagination?.after || 0,
       where: Object.keys(whereOptions).length ? whereOptions : undefined,
     };
 
-    const pets = await EntPet.find(findArgs);
+    const pets = await prisma.entPet.findMany(findArgs);
 
     if (pets.length === 0) {
       // Return no results
@@ -82,7 +78,7 @@ class EntPetService {
     }
 
     // Check if there's a next page
-    const nextRecord = await EntPet.find({
+    const nextRecord = await prisma.entPet.findMany({
       take: 1,
       skip: findArgs.take + findArgs.skip,
       where: findArgs.where,
@@ -91,7 +87,7 @@ class EntPetService {
     const hasNextPage = nextRecord.length === 1;
 
     // Check the total count of the records based on filters
-    const count = await EntPet.count({
+    const count = await prisma.entPet.count({
       where: findArgs.where,
     });
 
@@ -107,64 +103,63 @@ class EntPetService {
   }
 
   public async createPet(data: CreateEntPetData): Promise<EntPet> {
+    const prisma = new PrismaClient();
+
     // Build a new entity instance
-    const pet = new EntPet();
-
-    // Set scalar values
-    pet.name = data.name;
-    pet.age = data.age;
-    pet.breed = data.breed;
-
-    // Save the entity
-    await pet.save();
+    const pet = prisma.entPet.create({
+      data: {
+        name: data.name,
+        age: data.age,
+        breed: data.breed,
+      },
+    });
 
     return pet;
   }
 
   public async updatePet(data: UpdateEntPetData): Promise<EntPet> {
-    const pet = await EntPet.findOne({
-      relations: ['brand', 'images', 'industry', 'processingCurrencies'],
+    const prisma = new PrismaClient();
+
+    await prisma.entPet.findFirstOrThrow({
       where: { id: data.id },
     });
 
-    if (!pet) {
-      throw new Error(
-        oneLine`
-          [EntPetService] [updatePet] 
-          Could not update EntPet with id='${data.id}' because it could
-          NOT be found in the database.
-        `
-      );
-    }
+    const newPetData: Prisma.EntPetUpdateArgs['data'] = {};
 
     if (data.name) {
-      pet.name = data.name.value;
+      newPetData.name = data.name.value;
     }
 
     if (data.age) {
-      pet.age = data.age.value;
+      newPetData.age = data.age.value;
     }
 
     if (data.breed) {
       if (data.breed.operation === UpdateOperation.UPDATE) {
-        pet.breed = data.breed.value;
+        newPetData.breed = data.breed.value;
       }
 
       if (data.breed.operation === UpdateOperation.DELETE) {
-        pet.breed = undefined;
+        newPetData.breed = undefined;
       }
     }
 
-    await pet.save();
+    const pet = await prisma.entPet.update({
+      where: { id: data.id },
+      data: newPetData,
+    });
 
-    // Return the updated entity
     return pet;
   }
 
   public async deletePet(id: string): Promise<boolean> {
-    const deletionResult = await EntPet.delete(id);
+    const prisma = new PrismaClient();
 
-    return deletionResult.affected === 1;
+    await prisma.entPet.delete({
+      where: { id },
+    });
+
+    return true;
   }
 }
 

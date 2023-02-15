@@ -1,6 +1,5 @@
 import { graphql, GraphQLSchema, ExecutionResult } from 'graphql';
 import { buildSchema } from 'type-graphql';
-import Container from 'typedi';
 
 type Maybe<T> = null | undefined | T;
 
@@ -22,7 +21,6 @@ export const graphQLCall = async ({
   if (!schema) {
     schema = await buildSchema({
       resolvers: [`${__dirname}/../graphql/resolvers/index.ts`],
-      container: Container,
     });
   }
 
