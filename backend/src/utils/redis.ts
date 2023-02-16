@@ -3,7 +3,7 @@ import { createClient, RedisClientType } from 'redis';
 import { logger } from '.';
 
 class Redis {
-  private client: RedisClientType<any>;
+  private client: RedisClientType;
 
   public create(): void {
     const envRedisHost = process.env.REDIS_HOST;
