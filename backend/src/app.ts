@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
@@ -6,6 +8,7 @@ import express from 'express';
 import lusca from 'lusca';
 import morgan from 'morgan';
 import { buildSchema, BuildSchemaOptions } from 'type-graphql';
+import { Container } from 'typedi';
 
 import { EntPetResolver } from './graphql/resolvers';
 import { logger, redis } from './utils';
@@ -59,6 +62,7 @@ class App {
 
     const schema = await buildSchema({
       resolvers,
+      container: Container,
     });
 
     const apolloServer = new ApolloServer({

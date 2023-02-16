@@ -1,4 +1,5 @@
 import { Prisma, EntPet } from '@prisma/client';
+import { Service } from 'typedi';
 
 import { getStringFieldFilterOperator } from '@src/graphql/inputs/FilterEntity/utils/FieldFilterOperators';
 import { PaginationInput } from '@src/graphql/inputs/PaginateEntity/PaginationInput';
@@ -9,6 +10,7 @@ import UpdateEntPetData from '@src/graphql/resolvers/EntPet/inputs/UpdateEntPetD
 import { PaginatedPetsResponse } from '@src/graphql/resolvers/EntPet/outputs/EntPetPagination';
 import prisma from '@src/utils/prisma';
 
+@Service()
 class EntPetService {
   public async getPetByID(id: string): Promise<EntPet> {
     const pet = await prisma.entPet.findFirstOrThrow({

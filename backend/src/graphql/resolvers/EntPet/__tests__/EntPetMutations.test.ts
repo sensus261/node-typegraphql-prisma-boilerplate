@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { EntPet } from '@prisma/client';
 
 import { EntPetService } from '@src/services';

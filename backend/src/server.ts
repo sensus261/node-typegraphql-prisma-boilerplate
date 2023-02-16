@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { config } from 'dotenv';
 
 import 'module-alias/register';

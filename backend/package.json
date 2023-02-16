@@ -14,15 +14,12 @@
     "watch-ts": "tsc -w",
     "lint": "tsc --noEmit && eslint . --ext .js,.ts",
     "lint:fix": "tsc --noEmit && eslint . --ext .js,.ts --fix",
-
     "db:schema-validate": "npx prisma validate",
     "db:schema-format": "npx prisma format",
     "db:load-database-to-schema": "npx prisma db pull",
     "db:load-schema-to-database": "npx prisma db push",
     "db:bootstrap": "yarn db:load-schema-to-database && npx prisma generate",
-
     "start:dev": "yarn build && yarn watch",
-
     "test": "jest --runInBand"
   },
   "author": "Dragan Dorin Alexandru",
@@ -59,6 +56,7 @@
     "reflect-metadata": "^0.1.13",
     "start-server-and-test": "^1.10.8",
     "type-graphql": "^1.1.1",
+    "typedi": "^0.10.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

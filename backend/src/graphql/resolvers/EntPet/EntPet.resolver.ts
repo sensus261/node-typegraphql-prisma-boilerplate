@@ -1,4 +1,5 @@
 import { Resolver, Query, Mutation, Arg } from 'type-graphql';
+import { Service } from 'typedi';
 
 import { EntPet } from '@src/graphql/entities';
 import { PaginationInput } from '@src/graphql/inputs/PaginateEntity/PaginationInput';
@@ -9,13 +10,15 @@ import EntPetFilters from './inputs/EntPetFiltersData';
 import UpdateEntPetData from './inputs/UpdateEntPetData';
 import { PaginatedPetsResponse } from './outputs/EntPetPagination';
 
+@Service()
 @Resolver()
 class EntPetResolver {
+  constructor(private readonly petService: EntPetService) {}
+
   @Query(() => EntPet)
   async pet(@Arg('id') id: string) {
     try {
-      const petService = new EntPetService();
-      const shop = await petService.getPetByID(id);
+      const shop = await this.petService.getPetByID(id);
 
       return shop;
     } catch (error) {
@@ -29,8 +32,7 @@ class EntPetResolver {
     @Arg('filters', { nullable: true }) filters?: EntPetFilters
   ) {
     try {
-      const petService = new EntPetService();
-      const paginatedPetsResponse = await petService.getPets(
+      const paginatedPetsResponse = await this.petService.getPets(
         pagination,
         filters
       );
@@ -44,8 +46,7 @@ class EntPetResolver {
   @Mutation(() => EntPet)
   async createPet(@Arg('data') data: CreateEntPetData) {
     try {
-      const petService = new EntPetService();
-      const pet = await petService.createPet(data);
+      const pet = await this.petService.createPet(data);
 
       return pet;
     } catch (error) {
@@ -56,8 +57,7 @@ class EntPetResolver {
   @Mutation(() => EntPet)
   async updatePet(@Arg('data') data: UpdateEntPetData) {
     try {
-      const petService = new EntPetService();
-      const pet = await petService.updatePet(data);
+      const pet = await this.petService.updatePet(data);
 
       return pet;
     } catch (error) {
@@ -68,8 +68,7 @@ class EntPetResolver {
   @Mutation(() => Boolean)
   async deletePet(@Arg('id') id: string) {
     try {
-      const petService = new EntPetService();
-      const petDeleted = petService.deletePet(id);
+      const petDeleted = this.petService.deletePet(id);
 
       return petDeleted;
     } catch (error) {

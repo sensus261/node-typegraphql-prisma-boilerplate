@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { FilterOperation } from '@src/graphql/inputs/FilterEntity/FilterOperation.enum';
 import { UpdateOperation } from '@src/graphql/inputs/UpdateEntity/UpdateOperation.enum';
 import { EntPetService } from '@src/services';
