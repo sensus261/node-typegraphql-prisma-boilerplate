@@ -5,6 +5,6 @@ export class PaginationInput {
   @Field()
   first: number;
 
-  @Field()
-  after: number;
+  @Field({ nullable: true })
+  after?: number;
 }

@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { ApolloServer } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
@@ -10,6 +9,7 @@ import { buildSchema, BuildSchemaOptions } from 'type-graphql';
 
 import { EntPetResolver } from './graphql/resolvers';
 import { logger, redis } from './utils';
+import prisma from './utils/prisma';
 
 class App {
   public app: express.Application;
@@ -70,7 +70,6 @@ class App {
 
   private async connectToTheDatabase() {
     // TODO: Add database connection notifier
-    const prisma = new PrismaClient();
     try {
       logger.info('💤 Connecting to postgres database using...');
       await prisma.$connect();

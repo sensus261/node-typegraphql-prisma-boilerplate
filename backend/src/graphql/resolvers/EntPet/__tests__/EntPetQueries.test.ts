@@ -1,14 +1,13 @@
-import { EntPet, PrismaClient } from '@prisma/client';
+import { EntPet } from '@prisma/client';
 
 import { EntPetService } from '@src/services';
 import { gql, graphQLCall } from '@src/tests/graphql';
+import prisma from '@src/utils/prisma';
 
 let pet: EntPet;
 
 describe('EntPet queries tests', () => {
   beforeEach(async () => {
-    const prisma = new PrismaClient();
-
     const deleteEntPet = prisma.entPet.deleteMany();
 
     await prisma.$transaction([deleteEntPet]);

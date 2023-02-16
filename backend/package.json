@@ -21,13 +21,9 @@
     "db:load-schema-to-database": "npx prisma db push",
     "db:bootstrap": "yarn db:load-schema-to-database && npx prisma generate",
 
-
     "start:dev": "yarn build && yarn watch",
 
-
-    "test:preload": "echo 'Running tests...\n'",
-    "test": "yarn test:preload && jest --runInBand",
-    "test:all": "yarn test:preload && jest --runInBand ./src"
+    "test": "jest --runInBand"
   },
   "author": "Dragan Dorin Alexandru",
   "license": "MIT",

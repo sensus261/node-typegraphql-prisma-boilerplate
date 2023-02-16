@@ -1,5 +1,4 @@
-import { PrismaClient, Prisma, EntPet } from '@prisma/client';
-import { oneLine } from 'common-tags';
+import { Prisma, EntPet } from '@prisma/client';
 
 import { getStringFieldFilterOperator } from '@src/graphql/inputs/FilterEntity/utils/FieldFilterOperators';
 import { PaginationInput } from '@src/graphql/inputs/PaginateEntity/PaginationInput';
@@ -8,11 +7,10 @@ import CreateEntPetData from '@src/graphql/resolvers/EntPet/inputs/CreateEntPetD
 import EntPetFilters from '@src/graphql/resolvers/EntPet/inputs/EntPetFiltersData';
 import UpdateEntPetData from '@src/graphql/resolvers/EntPet/inputs/UpdateEntPetData';
 import { PaginatedPetsResponse } from '@src/graphql/resolvers/EntPet/outputs/EntPetPagination';
+import prisma from '@src/utils/prisma';
 
 class EntPetService {
   public async getPetByID(id: string): Promise<EntPet> {
-    const prisma = new PrismaClient();
-
     const pet = await prisma.entPet.findFirstOrThrow({
       where: { id },
     });
@@ -24,35 +22,19 @@ class EntPetService {
     pagination?: PaginationInput,
     filters?: EntPetFilters
   ): Promise<PaginatedPetsResponse> {
-    const prisma = new PrismaClient();
-
     const whereOptions: Prisma.EntPetWhereInput = {};
 
     if (filters) {
-      try {
-        if (filters.name) {
-          whereOptions.name = getStringFieldFilterOperator(
-            filters.name,
-            'name'
-          );
-        }
+      if (filters.name) {
+        whereOptions.name = getStringFieldFilterOperator(filters.name, 'name');
+      }
 
-        if (filters.age) {
-          whereOptions.age = getStringFieldFilterOperator(filters.age, 'age');
-        }
+      if (filters.age) {
+        whereOptions.age = getStringFieldFilterOperator(filters.age, 'age');
+      }
 
-        if (filters.breed) {
-          whereOptions.breed = getStringFieldFilterOperator(
-            filters.breed,
-            'age'
-          );
-        }
-      } catch (error) {
-        throw new Error(
-          oneLine`
-              [EntPetService] -> [getPets] => ${(error as Error).message}
-            `
-        );
+      if (filters.breed) {
+        whereOptions.breed = getStringFieldFilterOperator(filters.breed, 'age');
       }
     }
 
@@ -103,8 +85,6 @@ class EntPetService {
   }
 
   public async createPet(data: CreateEntPetData): Promise<EntPet> {
-    const prisma = new PrismaClient();
-
     // Build a new entity instance
     const pet = prisma.entPet.create({
       data: {
@@ -118,8 +98,6 @@ class EntPetService {
   }
 
   public async updatePet(data: UpdateEntPetData): Promise<EntPet> {
-    const prisma = new PrismaClient();
-
     await prisma.entPet.findFirstOrThrow({
       where: { id: data.id },
     });
@@ -140,7 +118,7 @@ class EntPetService {
       }
 
       if (data.breed.operation === UpdateOperation.DELETE) {
-        newPetData.breed = undefined;
+        newPetData.breed = null;
       }
     }
 
@@ -153,8 +131,6 @@ class EntPetService {
   }
 
   public async deletePet(id: string): Promise<boolean> {
-    const prisma = new PrismaClient();
-
     await prisma.entPet.delete({
       where: { id },
     });
