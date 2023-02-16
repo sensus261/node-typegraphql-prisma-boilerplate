@@ -21,6 +21,7 @@ class App {
     this.app = express();
     this.app.set('env', process.env.NODE_ENV);
 
+    this.connectToTheDatabase();
     this.createRedisClient();
     this.initializeMiddlewares();
     this.initializeGraphQLServer();
@@ -73,7 +74,6 @@ class App {
   }
 
   private async connectToTheDatabase() {
-    // TODO: Add database connection notifier
     try {
       logger.info('💤 Connecting to postgres database using...');
       await prisma.$connect();
