@@ -1,6 +1,6 @@
 import { Field, ObjectType } from 'type-graphql';
 
-import { BaseEntity } from '../mixins/BaseEntity';
+import { BaseEntity } from '../BaseEntity';
 
 @ObjectType()
 export class EntPet extends BaseEntity {
