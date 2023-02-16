@@ -1,3 +1,3 @@
-**Node typegraphql boilerplate**
+**Node.JS Typegraphql with Prisma boilerplate**
 
 
